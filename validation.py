@@ -1,4 +1,7 @@
 def validacion_usuario(cadena):
+    """Facundo Rizzato
+    valida que la cadena tenga entre 5 y 15 caracteres, que solo tenga letras, numeros, y ['_', '-', '.']
+    """
     caracteres_no_admitidos = False
     for char in cadena:
         if not (char.isalnum() or char in ['_', '-', '.']):
@@ -6,6 +9,9 @@ def validacion_usuario(cadena):
     return 5 <= len(cadena) <= 15 and not caracteres_no_admitidos
     
 def validacion_password(cadena):
+    """Facundo Rizzato
+    valida que la cadena tenga entre 4 y 8 caracteres, que tenga al menos una mayuscula, una minuscula, un numero y un caracter especial
+    """
     tiene_mayuscula = False
     tiene_minuscula = False
     tiene_numero = False
@@ -31,3 +37,4 @@ def validacion_password(cadena):
             caracteres_repetidos = True
 
     return 4 <= len(cadena) <= 8 and caracteres_necesarios and not caracteres_repetidos
+

@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-import cifrados, validation
+import cifrados, admin_users
 import csv
 
 options = []
@@ -11,6 +11,9 @@ with open('resources\preguntas.csv', newline='', encoding='utf-8') as archivo_cs
 
 # functions
 def actualizar_label(tipo_cifrado):
+    """Facundo Rizzato
+    Actualiza el label con el texto cifrado o descifrado, dependiendo del tipo de cifrado seleccionado.
+    """
     if tipo_cifrado == "Cesar":
         texto_cifrado = cifrados.cifrado_cesar(texto_original.get(), clave_entry.get(), True)
     elif tipo_cifrado == "des_Cesar":
@@ -22,123 +25,11 @@ def actualizar_label(tipo_cifrado):
 
     result_label.config(text=texto_cifrado)
 
-def recuperacion(user, entry_respuesta, mensaje):
-
-    with open('resources/data.csv', 'r+', newline='', encoding='utf-8') as archivo:
-        lector_csv = csv.reader(archivo)
-        lineas = list(lector_csv)
-
-        for fila in lineas:
-            if fila[0] == user and fila[3] == entry_respuesta:
-                mensaje.config(text=fila[1])
-            elif fila[0] == user and int(fila[4]) < 3:
-                intentos_restantes = 3 - int(fila[4])
-                fila[4] = str(int(fila[4]) + 1)
-                mensaje.config(text=f"Respuesta incorrecta. Intentos restantes: {intentos_restantes}")
-            else:
-                mensaje.config(text="Usuario bloqueado.")
-
-        archivo.seek(0)
-        archivo.truncate()
-        escritor_csv = csv.writer(archivo)
-        escritor_csv.writerows(lineas)
-
-def validar_button_pressed(user, error_msg, frame_ini, frame_fin, root):
-    with open('resources/data.csv', newline='', encoding='utf-8') as archivo:
-        lector_csv = csv.reader(archivo)
-        for fila in lector_csv:
-            if fila[0] == user:
-                id_pregunta = fila[2]
-
-    with open('resources/data.csv', newline='', encoding='utf-8') as archivo_csv:
-        lector_csv = csv.reader(archivo_csv)
-
-        usuario_encontrado = False
-
-        for fila in lector_csv:
-            if fila[0] == user and int(fila[4]) <= 3:
-                usuario_encontrado = True
-                
-                with open('resources/preguntas.csv', newline='', encoding='utf-8') as archivo_csv:
-                    lector_csv = csv.reader(archivo_csv)
-                    for fila in lector_csv:
-                        if fila[0] == id_pregunta:
-                            pregunta = fila[1]
-
-                frame_ini.destroy()
-                frame_fin.pack()
-                
-                recuperacion_title = ttk.Label(root, text="Pregunta de recuperación:", style='secondary.TLabel')
-                recuperacion_pregunta = ttk.Label(root, text=f"{pregunta}", style='secondary.TLabel')
-                recuperacion_entry = ttk.Entry(root, width=50)
-                msg_label = ttk.Label(root, text="", foreground="red", style='secondary.TLabel')
-                verificar_button = ttk.Button(root, text="Verificar", command=lambda: recuperacion(user, recuperacion_entry.get(), msg_label))
-
-                recuperacion_title.pack(pady=5)
-                recuperacion_pregunta.pack(pady=10)
-                recuperacion_entry.pack(pady=20)
-                msg_label.pack(pady=5)
-                verificar_button.pack(pady=10)
-                    
-            elif fila[0] == user and int(fila[4]) > 3:
-                usuario_encontrado = True
-                error_msg.config(text="Usuario bloqueado.")
-                
-        if not usuario_encontrado:
-            error_msg.config(text="Usuario incorrectos.")
-
-def login(user, password, error_msg_label, frame):
-    with open('resources\data.csv', newline='', encoding='utf-8') as archivo_csv:
-        lector_csv = csv.reader(archivo_csv)
-        
-        usuario_encontrado = False
-        for fila in lector_csv:
-            if fila[0] == user and fila[1] == password:
-                usuario_encontrado = True
-                if int(fila[4]) <= 3:
-                    encryption_windows()
-                    frame.destroy()
-                else:
-                    error_msg_label.config(text="Usuario bloqueado.")
-                
-        if not usuario_encontrado:
-            error_msg_label.config(text="Usuario o contraseña incorrectos.")
-
-def registro(user, password, error_msg_label, entry_user, entry_password, recuperacion, recuperacion_options):
-    usuario_existente = False
-    id_recuperacion = None
-    
-    with open('resources/data.csv', newline='', encoding='utf-8') as archivo_csv:
-        lector_csv = csv.reader(archivo_csv)
-        for fila in lector_csv:
-            if fila[0] == user:
-                usuario_existente = True
-                error_msg_label.config(text="Usuario ya existente.")
-    
-    with open('resources/preguntas.csv', newline='', encoding='utf-8') as archivo_csv:
-        lector_csv = csv.reader(archivo_csv)
-        for fila in lector_csv:
-            if fila[1] == recuperacion_options:
-                id_recuperacion = fila[0]
-    
-    if not usuario_existente and id_recuperacion is not None:
-        if validation.validacion_usuario(user) and validation.validacion_password(password):
-            with open('resources/data.csv', 'a', newline='') as archivo_csv:
-                escritor_csv = csv.writer(archivo_csv)
-                escritor_csv.writerow([user, password, id_recuperacion, recuperacion, 0])
-    
-            error_msg_label.config(text="Usuario registrado correctamente.", foreground="green")
-            entry_user.delete(0, tk.END)
-            entry_password.delete(0, tk.END)
-        else:
-            error_msg_label.config(text="Usuario o contraseña no válidos.")
-    else:
-        error_msg_label.config(text="Usuario existente o opción de recuperación no válida.")
-
-
-
 # windows
 def encryption_windows():
+    """Facundo Rizzato
+    Abre la ventana de cifrado.
+    """
     main_menu.destroy()
 
     encryption_menu.pack()
@@ -154,6 +45,9 @@ def encryption_windows():
     result_label.grid(row=7, column=0, columnspan=2, pady=20)
 
 def sign_up_windows():
+    """Facundo Rizzato
+    Abre la ventana de registro.
+    """
     sign_up = tk.Toplevel(root)
     sign_up.title("Registrarse")
     sign_up.geometry("500x500")
@@ -167,7 +61,7 @@ def sign_up_windows():
     recuperacion_options = ttk.Combobox(sign_up, width=50, values=options, state="readonly")
     recuperacion = ttk.Entry(sign_up, width=50)
     error_msg = ttk.Label(sign_up, text="", foreground="red", style='secondary.TLabel')
-    save_button = ttk.Button(sign_up, text="Guardar", command=lambda: registro(user_entry.get(), password_entry.get(), error_msg, user_entry, password_entry, recuperacion.get(), recuperacion_options.get()))
+    save_button = ttk.Button(sign_up, text="Guardar", command=lambda: admin_users.registro(user_entry.get(), password_entry.get(), error_msg, user_entry, password_entry, recuperacion.get(), recuperacion_options.get()))
 
     user_title.pack(pady=5)
     user_entry.pack(pady=10)
@@ -180,6 +74,9 @@ def sign_up_windows():
     save_button.pack(pady=10)
 
 def login_windows():
+    """Facundo Rizzato
+    Abre la ventana de inicio de sesión.
+    """
     login_frame = tk.Toplevel(root)
     login_frame.title("Iniciar sesión")
     login_frame.geometry("500x500")
@@ -191,7 +88,7 @@ def login_windows():
     password_entry = ttk.Entry(login_frame, width=50)
     error_msg = ttk.Label(login_frame, text="", foreground="red", style='secondary.TLabel')
     recuperacion_button = ttk.Button(login_frame, text="Recuperar contraseña", command=recuperacion_windows)
-    login_button = ttk.Button(login_frame, text="Iniciar sesión", command=lambda: login(user_entry.get(), password_entry.get(), error_msg, login_frame))
+    login_button = ttk.Button(login_frame, text="Iniciar sesión", command=lambda: admin_users.login(user_entry.get(), password_entry.get(), error_msg, login_frame, encryption_windows))
 
     user_title.pack(pady=5)
     user_entry.pack(pady=10)
@@ -202,6 +99,9 @@ def login_windows():
     login_button.pack(pady=10)
 
 def recuperacion_windows():
+    """Facundo Rizzato
+    Abre la ventana de recuperación de contraseña.
+    """
     recuperacion_windows = tk.Toplevel(root)
 
     recuperacion_windows.title("Recuperación de contraseña")
@@ -214,7 +114,7 @@ def recuperacion_windows():
     user_title = ttk.Label(insert_user_frame, text="Usuario:", style='secondary.TLabel')
     user_entry = ttk.Entry(insert_user_frame, width=50)
     error_msg = ttk.Label(insert_user_frame, text="", foreground="red", style='secondary.TLabel')
-    validar_button = ttk.Button(insert_user_frame, text="Verificar", command=lambda: validar_button_pressed(user_entry.get(), error_msg, insert_user_frame, insert_recuperacion_frame, recuperacion_windows))
+    validar_button = ttk.Button(insert_user_frame, text="Verificar", command=lambda: admin_users.recuperacion_button_pressed(user_entry.get(), error_msg, insert_user_frame, insert_recuperacion_frame, recuperacion_windows))
 
     insert_user_frame.pack()
     user_title.pack(pady=5)

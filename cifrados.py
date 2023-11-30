@@ -1,4 +1,7 @@
 def cifrado_cesar(cadena, clave, cifrado):
+    """
+    cifra o descifra una cadena de texto utilizando el cifrado cesar
+    """
     if cifrado == False:
         clave = int(clave) * -1
     i = 0
@@ -14,6 +17,9 @@ def cifrado_cesar(cadena, clave, cifrado):
     return cadena_nueva
 
 def cifrado_atbash(cadena):
+    """
+    cifra o descifra una cadena de texto utilizando el cifrado atbash
+    """
     cadena_nueva = ""
     for char in cadena:
         if char.isalpha():
