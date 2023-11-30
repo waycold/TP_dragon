@@ -1,6 +1,4 @@
 def cifrado_cesar(cadena, clave, cifrado):
-    global destinatario_validado
-    global tipo_cifrado
     
     if cifrado == False:
         clave = int(clave) * -1
@@ -27,9 +25,6 @@ def cifrado_cesar(cadena, clave, cifrado):
         result_string.set("Destinatario Inexistente")
 
 def cifrado_atbash(cadena):
-    global destinatario_validado
-    global tipo_cifrado
-    
     cadena_nueva = ""
     for char in cadena:
         if char.isalpha():
@@ -43,23 +38,13 @@ def cifrado_atbash(cadena):
             cadena_nueva += char
     return cadena_nueva
 
-    if validar_destinatario(destinatario_validado):
+    if destinatario_validado:
         remitente = "usuario_actual"
-        clave = int(clave_entry.get())
-        cifrado = tipo_cifrado[0] + str(clave) if tipo_cifrado == "Cesar" else "A"
-        mensaje_cifrado = cadena_nueva
-        
-        if validar_destinatario(destinatario_validado):
-            with open('mensajes.csv', mode='a', newline='') as file:
-                writer = csv.writer(file)
-                writer.writerow([destinatario_validado, remitente, cifrado, mensaje_cifrado])
-                result_string.set("Mensaje Enviado")
-        else:
-            result_string.set("Destinatario Inexistente")
+        clave_actual = int(clave_entry.get())
+        cifrado = tipo_cifrado[0] + str(clave_actual) if tipo_cifrado == "Cesar" else "A"
+            mensaje_cifrado = cadena_nueva
+    guardar_mensaje(destinatario_validado, remitente, cifrado, mensaje_cifrado)
+        tipo_cifrado = "Atbash"
     else:
         result_string.set("Destinatario Inexistente")
-        
-    if destinatario_validado: 
-        mensaje_cifrado = cadenita
-        guardar_mensaje(destinatario_validado, mensaje_cifrado)
-        tipo_cifrado = "Atbash"
+
