@@ -24,7 +24,7 @@ def cifrado_cesar(cadena, clave, cifrado):
     else:
         result_string.set("Destinatario Inexistente")
 
-def cifrado_atbash(cadena):
+def cifrado_atbash(cadena, tipo_cifrado, destinatario_valido):
     cadena_nueva = ""
     for char in cadena:
         if char.isalpha():
