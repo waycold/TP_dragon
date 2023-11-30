@@ -76,7 +76,7 @@ def continue_pressed():
     botton_descifrar_atbash.grid(row=6, column=1, pady=20, padx=40)
     botton_enviar_mensaje_cesar.grid(row=7, column=0, pady=20, padx=40)
     botton_enviar_mensaje_atbash.grid(row=7, column=1, pady=20, padx=40)
-    result_label.grid(row=7, column=0, columnspan=2, pady=20)
+    result_label.grid(row=8, column=0, columnspan=2, pady=20)
 
     
 root = tk.Tk()
