@@ -93,6 +93,7 @@ def login(user, password, error_msg_label, frame, menu):
         if not usuario_encontrado:
             error_msg_label.config(text="Usuario o contraseña incorrectos.")
 
+
 def registro(user, password, error_msg_label, entry_user, entry_password, recuperacion, recuperacion_options):
     """Facundo Rizzato
     Valida si el usuario ingresado ya existe o no. En caso de no existir, valida si el usuario y contraseña ingresados son válidos.

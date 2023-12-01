@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-import cifrados, admin_users
+import cifrados, admin_users, adm_msg
 import csv
 
 options = []
@@ -25,6 +25,7 @@ def actualizar_label(tipo_cifrado):
 
     result_label.config(text=texto_cifrado)
 
+
 # windows
 def encryption_windows():
     """Facundo Rizzato
@@ -42,6 +43,8 @@ def encryption_windows():
     botton_cifrar_atbash.grid(row=5, column=1, pady=20, padx=40)
     botton_descifrar_cesar.grid(row=6, column=0, pady=20, padx=40)
     botton_descifrar_atbash.grid(row=6, column=1, pady=20, padx=40)
+    botton_enviar_mensaje_cesar.grid(row=7, column=0, pady=20, padx=40)
+    botton_enviar_mensaje_atbash.grid(row=7, column=1, pady=20, padx=40)
     result_label.grid(row=7, column=0, columnspan=2, pady=20)
 
 def sign_up_windows():
@@ -122,6 +125,26 @@ def recuperacion_windows():
     error_msg.pack(pady=5)
     validar_button.pack(pady=10)
 
+# objetivo2
+def windows_send_cesar():
+    ventana_cesar = tk.Toplevel(root)
+    ventana_cesar.title("Enviar mensaje cifrado con César")
+    destinatario_entry = ttk.Entry(ventana_cesar, width=30, font=("Arial", 14))
+    destinatario_entry.pack()
+    destinatario_button = ttk.Button(ventana_cesar, text="Elegir Destinatario", command=adm_msg.aceptar_destinatario)
+    send_button = ttk.Button(ventana_cesar, text="Enviar")
+    destinatario_button.pack(pady=10)
+    send_button.pack(pady=10)
+
+def windows_send_atbash():
+    ventana_atbash = tk.Toplevel(root)
+    ventana_atbash.title("Enviar mensaje cifrado con Atbash")
+    destinatario_entry = ttk.Entry(ventana_atbash, width=30, font=("Arial", 14))           
+    destinatario_entry.pack()       
+    destinatario_button = ttk.Button(ventana_atbash, text="Elegir Destinatario", command=adm_msg.aceptar_destinatario)
+    send_button = ttk.Button(ventana_atbash, text="Enviar")
+    destinatario_button.pack(pady=10)
+    send_button.pack(pady=10)
 
 root = tk.Tk()
 
@@ -169,6 +192,9 @@ botton_cifrar_cesar = ttk.Button(encryption_menu, text="Cifrar con Cesar", comma
 botton_cifrar_atbash = ttk.Button(encryption_menu, text="Cifrar con Atbash", command=lambda: actualizar_label("Atbash"))
 botton_descifrar_cesar = ttk.Button(encryption_menu, text="Descifrar con Cesar", command=lambda: actualizar_label("des_Cesar"))
 botton_descifrar_atbash = ttk.Button(encryption_menu, text="Descifrar con Atbash", command=lambda: actualizar_label("Atbash"))
+
+botton_enviar_mensaje_cesar = ttk.Button(encryption_menu, text="Enviar mensaje cifrado con Cesar", command=windows_send_cesar)
+botton_enviar_mensaje_atbash = ttk.Button(encryption_menu, text="Enviar mensaje cifrado con Atbash", command=windows_send_atbash)
 
 result_string = tk.StringVar()
 result_label = ttk.Label(encryption_menu, text="", font=("Arial", 14))
