@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-import cifrados, admin_users
+import cifrados, admin_users, adm_msg
 import csv
 
 options = []
@@ -38,11 +38,14 @@ def encryption_windows():
     text_entry.grid(row=2, column=0, columnspan=2, pady=(0, 10))
     clave_entry_description.grid(row=3, column=0, columnspan=2, pady=(0, 10))
     clave_entry.grid(row=4, column=0, columnspan=2, pady=(0, 100))
+    mensajes.grid(row=4, column=0, columnspan=2, pady=(0, 10))
     botton_cifrar_cesar.grid(row=5, column=0, pady=20, padx=40)
     botton_cifrar_atbash.grid(row=5, column=1, pady=20, padx=40)
     botton_descifrar_cesar.grid(row=6, column=0, pady=20, padx=40)
     botton_descifrar_atbash.grid(row=6, column=1, pady=20, padx=40)
-    result_label.grid(row=7, column=0, columnspan=2, pady=20)
+    botton_enviar_mensaje_cesar.grid(row=7, column=0, pady=20, padx=40)
+    botton_enviar_mensaje_atbash.grid(row=7, column=1, pady=20, padx=40)
+    result_label.grid(row=8, column=0, columnspan=2, pady=(0, 10))
 
 def sign_up_windows():
     """Facundo Rizzato
@@ -122,6 +125,91 @@ def recuperacion_windows():
     error_msg.pack(pady=5)
     validar_button.pack(pady=10)
 
+# objetivo2
+def windows_send_cesar():
+    ventana_cesar = tk.Toplevel(root)
+    ventana_cesar.title("Enviar mensaje cifrado con César")
+    ventana_cesar.geometry("500x500")
+    destinatario_Label = ttk.Label(ventana_cesar, text="Destinatario:", font=("Arial", 14))
+    destinatario_entry = ttk.Entry(ventana_cesar, width=30, font=("Arial", 14))
+    destinatario_button = ttk.Button(ventana_cesar, text="Elegir Destinatario", command=lambda: adm_msg.aceptar_destinatario(destinatario_entry.get(), error_msg))
+    msg_Label = ttk.Label(ventana_cesar, text="Mensaje:", font=("Arial", 14))
+    msg = ttk.Entry(ventana_cesar, width=30, font=("Arial", 14))
+    clave_Label = ttk.Label(ventana_cesar, text="Clave:", font=("Arial", 14))
+    clave = ttk.Entry(ventana_cesar, width=30, font=("Arial", 14))
+    error_msg = ttk.Label(ventana_cesar, text="", foreground="red", style='secondary.TLabel')
+    send_button = ttk.Button(ventana_cesar, text="Enviar", command=lambda: adm_msg.enviar_cesar(destinatario_entry.get(), msg.get(), "Cesar", clave.get(), error_msg))
+    destinatario_Label.pack()
+    destinatario_entry.pack()
+    msg_Label.pack(pady=10)
+    msg.pack(pady=10)
+    clave_Label.pack(pady=10)
+    clave.pack(pady=10)
+    destinatario_button.pack(pady=10)
+    error_msg.pack(pady=5)
+    send_button.pack(pady=10)
+
+def windows_send_atbash():
+    ventana_atbash = tk.Toplevel(root)
+    ventana_atbash.title("Enviar mensaje cifrado con Atbash")
+    ventana_atbash.geometry("500x500")
+    destinatario_Label = ttk.Label(ventana_atbash, text="Destinatario:", font=("Arial", 14))
+    destinatario_entry = ttk.Entry(ventana_atbash, width=30, font=("Arial", 14))           
+    msg_Label = ttk.Label(ventana_atbash, text="Mensaje:", font=("Arial", 14))
+    msg = ttk.Entry(ventana_atbash, width=30, font=("Arial", 14))
+    destinatario_button = ttk.Button(ventana_atbash, text="Elegir Destinatario", command=lambda: adm_msg.aceptar_destinatario(destinatario_entry.get(), error_msg))
+    error_msg = ttk.Label(ventana_atbash, text="", foreground="red", style='secondary.TLabel')
+    send_button = ttk.Button(ventana_atbash, text="Enviar", command=lambda: adm_msg.enviar_atbash(destinatario_entry.get(), msg.get(), "Atbash", 0, error_msg))
+    destinatario_Label.pack()
+    destinatario_entry.pack()
+    msg_Label.pack(pady=10)       
+    msg.pack(pady=10)
+    destinatario_button.pack(pady=10)
+    error_msg.pack(pady=5)
+    send_button.pack(pady=10)
+
+#objetivo 3
+
+def windows_mensajes():
+    ventana_mensajes = tk.Toplevel(root)
+    ventana_mensajes.title("Mensajes recibidos")
+    ventana_mensajes.geometry("500x500")
+    ventana_mensajes.iconbitmap('resources\icon.ico')
+    ventana_mensajes.configure(bg="#E7E7E7")
+
+    mensaje_label = ttk.Label(ventana_mensajes, text="Mensajes recibidos:", font=("Arial", 16), background="#E7E7E7")
+    mensaje_label.pack(pady=10)
+
+    with open('resources/actual_user.csv', 'r') as actual_user:
+        reader = csv.reader(actual_user)
+        fila = next(reader)
+        actual_user = fila[0]
+
+    with open('resources/mensajes.csv', 'r') as mensajes:
+        reader = csv.reader(mensajes)
+        for row in reader:
+            mensaje = row[3]
+            tipo_cifrado = row[2]
+            if tipo_cifrado[0] == "C":
+                clave = tipo_cifrado[1:]
+                mensaje = cifrados.cifrado_cesar(mensaje, clave, False)
+            else:
+                mensaje = cifrados.cifrado_atbash(mensaje)
+            
+            if row[1] == actual_user:
+                if row[0] == "*":
+                    mensaje = "[All]: " + mensaje
+                    mensaje_label = ttk.Label(ventana_mensajes, text=mensaje, font=("Arial", 12), foreground="#567BB4", background="#D9E1F2")
+                    mensaje_label.pack(pady=2, side="top", anchor="w", fill="x", padx=10)
+                else:
+                    mensaje = row[0] + ": " + mensaje
+                    mensaje_label = ttk.Label(ventana_mensajes, text=mensaje, font=("Arial", 12))
+                    mensaje_label.pack(pady=2, side="top", anchor="w", fill="x", padx=10)
+            else:
+                if row[0] == "*":
+                    mensaje = "[All]: " + mensaje
+                    mensaje_label = ttk.Label(ventana_mensajes, text=mensaje, font=("Arial", 12), foreground="#567BB4")
+                    mensaje_label.pack(pady=2, side="top", anchor="w", fill="x", padx=10)
 
 root = tk.Tk()
 
@@ -153,6 +241,7 @@ welcome_text = ttk.Label(main_menu, text="Bienvenido a la aplicación de mensaje
 instructions_text = ttk.Label(main_menu, text="Para continuar, presione el botón 'Continuar' o cierre la ventana.", style='secondary.TLabel')
 signup_button = ttk.Button(main_menu, text="Registrarse", command=sign_up_windows)
 login_button = ttk.Button(main_menu, text="Iniciar sesión", command=login_windows)
+# temporal_button = ttk.Button(main_menu, text="Continuar", command=encryption_windows)
 about_text = ttk.Label(main_menu, text="Construida por Facundo Rizzato, ...", font=("Arial", 10))
 
 # encryption menu
@@ -164,11 +253,15 @@ text_entry = ttk.Entry(encryption_menu, width=30, font=("Arial", 14), justify="c
 clave_entry_description = ttk.Label(encryption_menu, text="Ingrese la clave:", style='secondary.TLabel')
 clave_entry = ttk.Entry(encryption_menu, width=10, font=("Arial", 14), justify="center",textvariable=var, validate="key", validatecommand=(validacion, "%P"))
 continue_text = ttk.Label(encryption_menu, text="¡Has presionado Continuar!")
+mensajes = ttk.Button(encryption_menu, text="Mensajes recibidos", command=windows_mensajes)
 
 botton_cifrar_cesar = ttk.Button(encryption_menu, text="Cifrar con Cesar", command=lambda: actualizar_label("Cesar"))
 botton_cifrar_atbash = ttk.Button(encryption_menu, text="Cifrar con Atbash", command=lambda: actualizar_label("Atbash"))
 botton_descifrar_cesar = ttk.Button(encryption_menu, text="Descifrar con Cesar", command=lambda: actualizar_label("des_Cesar"))
 botton_descifrar_atbash = ttk.Button(encryption_menu, text="Descifrar con Atbash", command=lambda: actualizar_label("Atbash"))
+
+botton_enviar_mensaje_cesar = ttk.Button(encryption_menu, text="Enviar Cesar", command=windows_send_cesar)
+botton_enviar_mensaje_atbash = ttk.Button(encryption_menu, text="Enviar Atbash", command=windows_send_atbash)
 
 result_string = tk.StringVar()
 result_label = ttk.Label(encryption_menu, text="", font=("Arial", 14))
@@ -179,6 +272,7 @@ result_label = ttk.Label(encryption_menu, text="", font=("Arial", 14))
 main_menu.pack()
 welcome_text.pack(pady=20)
 instructions_text.pack(pady=(250, 5))
+# temporal_button.pack(pady=10)
 login_button.pack(pady=10)
 signup_button.pack(pady=10)
 about_text.pack(pady=20)

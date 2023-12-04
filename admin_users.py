@@ -87,11 +87,15 @@ def login(user, password, error_msg_label, frame, menu):
                 if int(fila[4]) <= 3:
                     menu()
                     frame.destroy()
+                    with open('resources\\actual_user.csv', 'w', newline='') as archivo_csv:
+                            escritor_csv = csv.writer(archivo_csv)
+                            escritor_csv.writerow([user])
                 else:
                     error_msg_label.config(text="Usuario bloqueado.")
                 
         if not usuario_encontrado:
             error_msg_label.config(text="Usuario o contraseña incorrectos.")
+
 
 def registro(user, password, error_msg_label, entry_user, entry_password, recuperacion, recuperacion_options):
     """Facundo Rizzato
