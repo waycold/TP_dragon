@@ -87,6 +87,9 @@ def login(user, password, error_msg_label, frame, menu):
                 if int(fila[4]) <= 3:
                     menu()
                     frame.destroy()
+                    with open('resources\\actual_user.csv', 'w', newline='') as archivo_csv:
+                            escritor_csv = csv.writer(archivo_csv)
+                            escritor_csv.writerow([user])
                 else:
                     error_msg_label.config(text="Usuario bloqueado.")
                 

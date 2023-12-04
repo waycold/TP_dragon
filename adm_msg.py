@@ -1,4 +1,5 @@
 import csv
+import cifrados
 
 ## NUEVAS FUNCIONES OBJETIVO 2 ##
 
@@ -11,56 +12,44 @@ def validar_destinatario(destinatario):
                 destinatario_valido = True
     return destinatario_valido
 
-def guardar_mensaje(destinatario, mensaje_cifrado, tipo_cifrado, clave_entry, result_string):
-    remitente = "usuario_actual"
-    clave = int(clave_entry.get())
-
+def guardar_mensaje(destinatario, mensaje_cifrado, tipo_cifrado, clave, error_msg):
+    with open('resources/actual_user.csv', 'r') as actual_user:
+        reader = csv.reader(actual_user)
+        for row in reader:
+            actual_user = row[0]
     if validar_destinatario(destinatario):
         cifrado = tipo_cifrado[0] + str(clave) if tipo_cifrado == "Cesar" else "A"
-
-        with open('mensajes.csv', 'a',) as MENSAJES_ENVIADOS:
+        with open('resources/mensajes.csv', 'a',) as MENSAJES_ENVIADOS:
             writer = csv.writer(MENSAJES_ENVIADOS)
-            writer.writerow([destinatario, remitente, cifrado, mensaje_cifrado])
-            result_string.set("Mensaje Enviado")
+            writer.writerow([destinatario, actual_user, cifrado, mensaje_cifrado])
+            error_msg.config(text ="Mensaje Enviado")
     else:
-        result_string.set("Destinatario Inexistente")
+        error_msg.config(text ="Destinatario Inexistente")
 
-def aceptar_destinatario(windows, destinatario_entry):
-    global destinatario_validado
-    destinatario = destinatario_entry.get()
+def aceptar_destinatario(destinatario, error_msg):
     if validar_destinatario(destinatario):
-        print("Destinatario válido:", destinatario)
-        destinatario_validado = destinatario
-        windows.destroy()
-        # ventana_atbash.destroy()
-        
+        error_msg.config(text = "destinatario valido", foreground="green")
     else:
-        print("Destinatario invalido")
+        error_msg.config(text = "Destinatario Inexistente")
 
-def enviar_cesar(destinatario_validado, cadena_nueva, tipo_cifrado, clave_actual, result_string):
+def enviar_cesar(destinatario, cadena, tipo_cifrado, clave_actual, error_msg):
     """Facundo Rizzato
     Guarda el mensaje cifrado en el archivo mensajes.csv.
     """
-    if destinatario_validado:
-        remitente = "usuario_actual"
-        # clave_actual = int(clave_entry.get())
-        cifrado = tipo_cifrado[0] + str(clave_actual) if tipo_cifrado == "Cesar" else "A"
-        mensaje_cifrado = cadena_nueva
-        guardar_mensaje(destinatario_validado, remitente, cifrado, mensaje_cifrado)
+    if validar_destinatario(destinatario):
         tipo_cifrado = "Cesar"
+        mensaje_cifrado = cifrados.cifrado_cesar(cadena, clave_actual, True)
+        guardar_mensaje(destinatario, mensaje_cifrado, tipo_cifrado, clave_actual, error_msg)
     else:
-        result_string.set("Destinatario Inexistente")
+        error_msg.config(text = "Error", foreground="red")
 
-def enviar_atbash(destinatario_validado, cadena_nueva, tipo_cifrado, clave_actual, result_string):
+def enviar_atbash(destinatario, cadena, tipo_cifrado, clave_actual, error_msg):
     """Facundo Rizzato
     Guarda el mensaje cifrado en el archivo mensajes.csv."""
-    if destinatario_validado:
-        remitente = "usuario_actual"
-        # clave_actual = int(clave_entry.get())
-        cifrado = tipo_cifrado[0] + str(clave_actual) if tipo_cifrado == "Cesar" else "A"
-        mensaje_cifrado = cadena_nueva
-        guardar_mensaje(destinatario_validado, remitente, cifrado, mensaje_cifrado)
+    if validar_destinatario(destinatario):
         tipo_cifrado = "Atbash"
+        mensaje_cifrado = cifrados.cifrado_atbash(cadena) 
+        guardar_mensaje(destinatario, mensaje_cifrado, tipo_cifrado, 0, error_msg)
     else:
-        result_string.set("Destinatario Inexistente")
+        error_msg.set("Error", foreground="red")
 
